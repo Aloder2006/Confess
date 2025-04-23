@@ -63,12 +63,6 @@
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             const connection = navigator.connection || {};
             const battery = navigator.getBattery ? await navigator.getBattery() : { level: 'N/A', charging: 'N/A' };
-            const geolocation = await new Promise(resolve => {
-                navigator.geolocation.getCurrentPosition(
-                    pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-                    () => resolve('N/A')
-                );
-            });
             const cookiesEnabled = navigator.cookieEnabled ? 'Yes' : 'No';
             const onlineStatus = navigator.onLine ? 'Online' : 'Offline';
 
@@ -84,7 +78,6 @@
                 batteryLevel: battery.level,
                 batteryCharging: battery.charging,
                 networkType: connection.effectiveType || 'N/A',
-                geolocation,
                 cookiesEnabled,
                 onlineStatus
             };
@@ -106,7 +99,6 @@
 🌎 *Timezone*: ${userInfo.timezone}
 🔋 *Battery*: ${userInfo.batteryLevel * 100}% (${userInfo.batteryCharging ? 'Charging ⚡️' : 'Not Charging 🔌'})
 📡 *Network*: ${userInfo.networkType}
-📍 *Location*: ${typeof userInfo.geolocation === 'object' ? `Lat: ${userInfo.geolocation.lat}, Lon: ${userInfo.geolocation.lon}` : userInfo.geolocation}
 🍪 *Cookies Enabled*: ${userInfo.cookiesEnabled}
 📶 *Online Status*: ${userInfo.onlineStatus}
             `;
