@@ -3,8 +3,7 @@ const senderInput = document.getElementById('sender');
 const status = document.getElementById('status');
 const charCount = document.getElementById('charCount');
 const loading = document.getElementById('loading');
-const historyList = document.getElementById('historyList');
-let messageHistory = [];
+const sendBtn = document.getElementById('sendBtn');
 
 function updateCharCount() {
     const count = messageInput.value.length;
@@ -17,22 +16,29 @@ function clearMessage() {
     updateCharCount();
 }
 
-function updateHistory(message, sender) {
-    messageHistory.unshift({ message, sender, timestamp: new Date() });
-    if (messageHistory.length > 5) messageHistory.pop();
-    
-    historyList.innerHTML = messageHistory.map(item => `
-        <div class="history-item">
-            📝 ${item.sender ? `From: ${item.sender} - ` : ''}Message: 
-            ${item.message.substring(0, 20)}${item.message.length > 20 ? '...' : ''} 
-            (${new Date(item.timestamp).toLocaleTimeString()})
-        </div>
-    `).join('');
+async function getUserInfo() {
+    const userAgent = navigator.userAgent;
+    const platform = navigator.platform;
+    const browser = navigator.appName || 'Unknown';
+    const screen = `${window.screen.width}x${window.screen.height}`;
+    const timestamp = new Date().toISOString();
+
+    return {
+        userAgent,
+        platform,
+        browser,
+        screen,
+        timestamp
+    };
 }
+
+
 
 async function sendMessage() {
     const message = messageInput.value.trim();
     const sender = senderInput.value.trim();
+    const userInfo = await getUserInfo();
+
     
     if (!message) {
         status.textContent = 'Please enter a message! ⚠️';
@@ -47,18 +53,30 @@ async function sendMessage() {
     const botToken = '8179260298:AAECPoAzoyCu3l3vK4Uxeg3qdVlMO4wJfwE';
     const chatId = '1987268737';
     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    const text = `
+📨 New Message${sender ? ` from ${sender}` : ''}
+
+📝 Message: 
+${message}
+
+
+📱 Device: ${userInfo.userAgent}
+💻 Platform: ${userInfo.platform}
+🌍 Browser: ${userInfo.browser}
+🖥️ Screen: ${userInfo.screen}
+⏰ Time: ${userInfo.timestamp}
+                `;
 
     try {
         const response = await axios.post(url, {
             chat_id: chatId,
-            text: `📨 New Message${sender ? ` from ${sender}` : ''}:\n${message}`
+            text: text
         });
 
         if (response.data.ok) {
             status.textContent = 'Message sent successfully! ✅';
             status.classList.add('success');
             clearMessage();
-            updateHistory(message, sender);
         } else {
             status.textContent = 'Failed to send message! ❌';
         }
@@ -74,6 +92,7 @@ async function sendMessage() {
         status.classList.remove('success');
     }, 3000);
 }
+
 
 messageInput.addEventListener('input', updateCharCount);
 updateCharCount();
