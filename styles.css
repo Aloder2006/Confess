@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background-color: #1a1a1a;
+    padding: 2rem;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    background-color: #2a2a2a;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+textarea {
+    height: 150px;
+    resize: none;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border: 2px solid #fff;
+}
+
+button {
+    padding: 12px;
+    background-color: #fff;
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #ccc;
+    transform: translateY(-2px);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.button-group button {
+    flex: 1;
+}
+
+.status {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.status.success {
+    color: #fff;
+}
+
+.message-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.history {
+    margin-top: 1.5rem;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.history h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.history-item {
+    background-color: #2a2a2a;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.loading.active {
+    display: block;
+}
+
+@media (max-width: 500px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    textarea {
+        height: 120px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 1rem;
+    }
+}
